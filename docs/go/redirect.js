@@ -1,11 +1,11 @@
-import { db } from "./firebase-config.js";
+import { db } from "../firebase-config.js";
 import {
   collection,
   addDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const TARGET_URL = "https://www.yad2.co.il/vehicles/item/57q4474l";
+const TARGET_URL = "https://www.yad2.co.il/vehicles/item/57q4474l?key=97eO8nxkFJmbtCZA";
 const MAX_WAIT_MS = 1200;
 
 function detectDevice(ua) {

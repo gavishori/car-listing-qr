@@ -36,8 +36,8 @@
     const regenBtn = document.getElementById("regenBtn");
     const downloadBtn = document.getElementById("downloadBtn");
 
-    // Default: this same folder's redirect page, on whatever host this file is served from.
-    input.value = new URL("./", window.location.href).toString();
+    // Default: the /go/ redirect+counter page, on whatever host this file is served from.
+    input.value = new URL("go/", window.location.href).toString();
 
     let currentCanvas = null;
 

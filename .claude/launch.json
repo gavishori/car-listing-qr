@@ -4,7 +4,7 @@
     {
       "name": "car-listing-qr-static",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-l", "5511", "."],
+      "runtimeArgs": ["serve", "-l", "5511", "./docs"],
       "port": 5511
     }
   ]
