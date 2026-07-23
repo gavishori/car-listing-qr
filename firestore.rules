@@ -12,11 +12,13 @@ service cloud.firestore {
                     && request.resource.data.device is string
                     && request.resource.data.browser is string;
 
-      // The dashboard reads aggregate counts and the recent list.
+      // The dashboard reads aggregate counts and the recent list, and can
+      // reset (delete) records via its own confirmed "reset" button.
       allow read: if true;
+      allow delete: if true;
 
-      // Records are never edited or removed by clients.
-      allow update, delete: if false;
+      // Records are never edited by clients.
+      allow update: if false;
     }
 
     // Deny everything else by default.

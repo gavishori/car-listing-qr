@@ -6,7 +6,8 @@ import {
   orderBy,
   limit,
   getDocs,
-  getCountFromServer
+  getCountFromServer,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const col = collection(db, "carQrScans");
@@ -18,6 +19,7 @@ const deviceRowEl = document.getElementById("deviceRow");
 const recentListEl = document.getElementById("recentList");
 const updatedAtEl = document.getElementById("updatedAt");
 const refreshBtn = document.getElementById("refreshBtn");
+const resetBtn = document.getElementById("resetBtn");
 
 function formatTime(date) {
   return date.toLocaleString("he-IL", {
@@ -85,6 +87,36 @@ async function loadStats() {
   }
 }
 
+async function resetCounter() {
+  const sure = window.confirm(
+    "פעולה זו תמחק לצמיתות את כל היסטוריית הסריקות ותאפס את המונה ל-0.\nאי אפשר לשחזר אחרי זה. להמשיך?"
+  );
+  if (!sure) return;
+
+  resetBtn.disabled = true;
+  resetBtn.textContent = "מאפס...";
+  try {
+    // Firestore has no "delete collection" call from the client — page
+    // through it in batches until nothing is left.
+    while (true) {
+      const snap = await getDocs(query(col, limit(400)));
+      if (snap.empty) break;
+      const batch = writeBatch(db);
+      snap.docs.forEach((d) => batch.delete(d.ref));
+      await batch.commit();
+      if (snap.size < 400) break;
+    }
+    await loadStats();
+  } catch (e) {
+    console.error("reset failed", e);
+    alert("האיפוס נכשל: " + e.message);
+  } finally {
+    resetBtn.disabled = false;
+    resetBtn.textContent = "איפוס המונה";
+  }
+}
+
+resetBtn.addEventListener("click", resetCounter);
 refreshBtn.addEventListener("click", loadStats);
 loadStats();
 setInterval(loadStats, REFRESH_MS);

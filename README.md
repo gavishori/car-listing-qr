@@ -16,6 +16,10 @@ shared code or data with anything else.
 3. **`public/qr/generate-qr.html`** — renders the actual QR image for the
    hosted redirect URL and lets you download it as a PNG to print/share.
 
+The dashboard also has an **"איפוס המונה" (reset)** button at the bottom
+that permanently deletes all recorded scans after a confirmation prompt —
+use it to zero the counter out (e.g. before actually posting the listing).
+
 ## What data is collected (and what isn't)
 
 Every scan writes exactly one Firestore document with three fields:
