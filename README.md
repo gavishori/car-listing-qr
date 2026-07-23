@@ -7,10 +7,15 @@ anything else.
 
 ## What it does
 
-1. **`docs/go/index.html`** — the page the QR code points to. On load it
-   writes one anonymous record to Firestore, then immediately redirects the
-   visitor to the real listing:
+1. **`docs/go/index.html`** — the page the QR code points to. It fires a
+   fire-and-forget `sendBeacon` write to Firestore (no SDK to load, nothing
+   awaited) and redirects on the very next line, so the intermediate URL is
+   on screen for only a few milliseconds — not the ~1s a full SDK load would
+   take. It then lands the visitor on the real listing:
    `https://www.yad2.co.il/vehicles/item/57q4474l?key=97eO8nxkFJmbtCZA`
+   (A screen recording paused frame-by-frame, or view-source, could still
+   reveal it — a fully invisible redirect needs a server-side Cloud Function,
+   which requires enabling Firebase's paid Blaze plan.)
 2. **`docs/index.html`** — the site's home page: a dashboard showing the
    running scan count, a breakdown by rough device type, and a list of
    recent scans. This is what opens when you click **"Visit site"** on

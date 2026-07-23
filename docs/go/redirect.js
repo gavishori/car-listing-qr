@@ -1,12 +1,11 @@
-import { db } from "../firebase-config.js";
-import {
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+// No Firebase SDK import here on purpose: loading it would delay the
+// redirect by hundreds of ms, leaving this page's URL visible in the address
+// bar longer than necessary. Instead we fire a raw REST write to Firestore
+// via sendBeacon (survives the navigation, never blocks it) and redirect on
+// the very next line.
+const PROJECT_ID = "car-qr-counter";
+const API_KEY = "AIzaSyC0KFLFvnmWnSO-5E-i9LEaxzMxppAbBjc";
 const TARGET_URL = "https://www.yad2.co.il/vehicles/item/57q4474l?key=97eO8nxkFJmbtCZA";
-const MAX_WAIT_MS = 1200;
 
 function detectDevice(ua) {
   if (/iPad|Tablet|PlayBook/i.test(ua)) return "טאבלט";
@@ -23,18 +22,33 @@ function detectBrowser(ua) {
   return "אחר";
 }
 
-async function logScan() {
+function logScanFireAndForget() {
   const ua = navigator.userAgent || "";
-  const write = addDoc(collection(db, "carQrScans"), {
-    device: detectDevice(ua),
-    browser: detectBrowser(ua),
-    ts: serverTimestamp()
-  }).catch((e) => console.warn("scan logging failed", e));
+  const payload = {
+    fields: {
+      device: { stringValue: detectDevice(ua) },
+      browser: { stringValue: detectBrowser(ua) },
+      ts: { timestampValue: new Date().toISOString() }
+    }
+  };
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/carQrScans?key=${API_KEY}`;
+  const body = JSON.stringify(payload);
 
-  const timeout = new Promise((resolve) => setTimeout(resolve, MAX_WAIT_MS));
-  await Promise.race([write, timeout]);
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
+      return;
+    }
+  } catch (e) {
+    // fall through to fetch
+  }
+
+  try {
+    fetch(url, { method: "POST", body, headers: { "Content-Type": "application/json" }, keepalive: true });
+  } catch (e) {
+    // never let logging failures block the redirect
+  }
 }
 
-logScan().finally(() => {
-  window.location.replace(TARGET_URL);
-});
+logScanFireAndForget();
+window.location.replace(TARGET_URL);
