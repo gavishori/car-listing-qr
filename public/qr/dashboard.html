@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>סטטיסטיקת סריקות</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="dash-wrap">
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">סריקות QR - מודעת הרכב</h1>
+        <p class="dash-subtitle">נתונים אנונימיים בלבד: כמות, זמן, סוג מכשיר ודפדפן בערך</p>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" type="button">רענון</button>
+    </div>
+
+    <div class="card">
+      <p class="kpi-label">סך הכול סריקות</p>
+      <div class="kpi-number" id="totalCount">–</div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">לפי סוג מכשיר</p>
+      <div class="device-row" id="deviceRow"></div>
+    </div>
+
+    <div class="card">
+      <p class="section-label">סריקות אחרונות</p>
+      <ul id="recentList"></ul>
+    </div>
+
+    <p class="updated-at" id="updatedAt"></p>
+  </div>
+  <script type="module" src="./dashboard.js"></script>
+</body>
+</html>
